@@ -1,36 +1,48 @@
 variable "location" {
-  description = "Azure region to deploy resources"
   type        = string
+  description = "Azure region"
+  default     = "eastus"
 }
 
 variable "environment" {
-  description = "Environment name like dev, test, prod"
   type        = string
+  description = "Environment name like dev, prod"
+  default     = "dev"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to resources"
+  default = {
+    environment = "dev"
+    owner       = "santhosh"
+  }
 }
 
 variable "address_space" {
-  description = "Address space for the VNet"
   type        = list(string)
+  description = "Address space for the virtual network"
+  default     = ["10.0.0.0/16"]
 }
 
 variable "subnets" {
-  description = "Subnets to create within the VNet"
-  type = list(object({
-    name           = string
-    address_prefix = string
-  }))
+  description = "Map of subnet names to their address prefixes"
+  type        = map(list(string))
+  default = {
+    subnet1 = ["10.0.1.0/24"]
+    subnet2 = ["10.0.2.0/24"]
+  }
 }
 
 variable "create_nsg" {
-  description = "Whether to create a Network Security Group"
   type        = bool
+  description = "Whether to create a network security group"
   default     = true
 }
 
 variable "nsg_rules" {
-  description = "List of NSG rules"
-  type = list(object({
-    name                       = string
+  description = "Map of NSG rules"
+  type = map(object({
     priority                   = number
     direction                  = string
     access                     = string
@@ -40,15 +52,22 @@ variable "nsg_rules" {
     source_address_prefix      = string
     destination_address_prefix = string
   }))
-  default = []
-}
-
-variable "tags" {
-  description = "Tags to apply to all resources"
-  type        = map(string)
+  default = {
+    allow_ssh = {
+      priority                   = 100
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      source_port_range          = "*"
+      destination_port_range     = "22"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+  }
 }
 
 variable "ssh_public_key_path" {
-  description = "Path to the SSH public key"
   type        = string
+  description = "Path to the SSH public key"
+  default     = "~/.ssh/id_rsa.pub"
 }
