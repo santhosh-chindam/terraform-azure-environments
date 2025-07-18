@@ -1,38 +1,36 @@
-variable "environment" {
-  type = string
+variable "location" {
+  description = "Azure region to deploy resources"
+  type        = string
 }
 
-variable "location" {
-  type = string
+variable "environment" {
+  description = "Environment name like dev, test, prod"
+  type        = string
 }
 
 variable "address_space" {
-  type = list(string)
-  default = ["10.0.0.0/16"]
+  description = "Address space for the VNet"
+  type        = list(string)
 }
 
 variable "subnets" {
-  type = map(list(string))
-  default = {
-    web     = ["10.0.1.0/24"]
-    backend = ["10.0.2.0/24"]
-  }
-}
-
-variable "tags" {
-  type = map(string)
-  default = {
-    project = "iac"
-  }
+  description = "Subnets to create within the VNet"
+  type = list(object({
+    name           = string
+    address_prefix = string
+  }))
 }
 
 variable "create_nsg" {
-  type    = bool
-  default = true
+  description = "Whether to create a Network Security Group"
+  type        = bool
+  default     = true
 }
 
 variable "nsg_rules" {
-  type = map(object({
+  description = "List of NSG rules"
+  type = list(object({
+    name                       = string
     priority                   = number
     direction                  = string
     access                     = string
@@ -42,16 +40,15 @@ variable "nsg_rules" {
     source_address_prefix      = string
     destination_address_prefix = string
   }))
-  default = {
-    allow_ssh = {
-      priority                   = 1001
-      direction                  = "Inbound"
-      access                     = "Allow"
-      protocol                   = "Tcp"
-      source_port_range          = "*"
-      destination_port_range     = "22"
-      source_address_prefix      = "*"
-      destination_address_prefix = "*"
-    }
-  }
+  default = []
+}
+
+variable "tags" {
+  description = "Tags to apply to all resources"
+  type        = map(string)
+}
+
+variable "ssh_public_key_path" {
+  description = "Path to the SSH public key"
+  type        = string
 }
