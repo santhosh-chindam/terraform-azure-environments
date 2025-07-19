@@ -15,7 +15,7 @@ This project is a submission for the Azure Terraform Infrastructure Challenge, s
 - ✅ Use this module to **create multiple environments** (e.g., dev, test, prod).
 - ✅ Add additional resources like **VM**, **Storage Account**, and **Public IP**.
 - ✅ Deploy using a **GitHub Actions workflow**.
-- ✅ Emphasize **clean code**, **secure practices**, and **scalability**.
+- ✅ Emphasize **clean code**, **secure practices**, and **scalability**..
 
 🔁 Module Usage
 Module: terraform-azure-vnet-module
