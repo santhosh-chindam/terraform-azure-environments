@@ -23,19 +23,29 @@ on:
           - westeurope
           - centralus
 
-env:
-  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
 jobs:
   terraform:
-    name: Deploy with Dynamic Inputs
+    name: Deploy to ${{ matrix.env_name }}
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        env_name: [dev, test, production]
+
+    # Dynamically pick the environment based on matrix value
+    environment: ${{ matrix.env_name }}
+
+    # Only run the job for the selected input environment
+    if: ${{ matrix.env_name == github.event.inputs.environment }}
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Terraform
@@ -52,10 +62,10 @@ jobs:
         working-directory: ./envs
 
       - name: Terraform Plan
-        run: terraform plan -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
+        run: terraform plan -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
+        run: terraform apply -auto-approve -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
