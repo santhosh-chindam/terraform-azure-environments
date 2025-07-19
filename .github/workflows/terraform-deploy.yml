@@ -57,7 +57,7 @@ jobs:
         run: terraform plan -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
-        working-directory: ./envs
+      #- name: Terraform Apply
+        #if: github.ref == 'refs/heads/main'
+        #run: terraform apply -auto-approve -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
+        #working-directory: ./envs
