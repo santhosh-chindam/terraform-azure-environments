@@ -102,6 +102,12 @@ Choose the environment and region.
 
 Click Run.
 
+If you can't see any option run the workflow, fork this repo and add the below environments and respective secrets to your repo and then run the workflow 
+
+<img width="1452" height="581" alt="image" src="https://github.com/user-attachments/assets/66198e42-938d-4269-8cfe-228174cd9099" />
+
+<img width="1435" height="795" alt="image" src="https://github.com/user-attachments/assets/af69e2ad-5656-4f8b-a8aa-f0dd31ad0cd8" />
+
 Only the selected environment will be deployed.
 
 🧪 Terraform Plan Output
