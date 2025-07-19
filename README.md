@@ -34,16 +34,8 @@ Resource group and location
 
 Example Use:
 
+<img width="845" height="281" alt="image" src="https://github.com/user-attachments/assets/4701fe4b-d78a-471d-8374-85b29c20e576" />
 
-module "vnet" {
-  source              = "github.com/santhosh-chindam/terraform-azure-vnet-module"
-  vnet_name           = var.vnet_name
-  resource_group_name = azurerm_resource_group.main.name
-  location            = var.location
-  address_space       = var.address_space
-  subnets             = var.subnets
-  tags                = var.tags
-}
 
 🌍 Multi-Environment Setup
 Secrets are configured in the GitHub repository environments (via Settings > Environments), and the respective secret values must be updated accordingly.
