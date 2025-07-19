@@ -90,6 +90,12 @@ AZURE_SUBSCRIPTION_ID
 AZURE_TENANT_ID
 
 🚀 Deployment Steps
+
+<img width="1499" height="433" alt="image" src="https://github.com/user-attachments/assets/504a5fb6-b787-4b34-af16-67507c521d2e" />
+
+<img width="1507" height="579" alt="image" src="https://github.com/user-attachments/assets/894ddec2-7013-4eaf-a762-d29909788221" />
+
+
 Go to Actions tab → Run workflow.
 
 Choose the environment and region.
