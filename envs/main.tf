@@ -45,36 +45,6 @@ resource "azurerm_public_ip" "vm_public_ip" {
   tags                = var.tags
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "vm-${var.environment}-${var.location}"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = var.location
-  size                = "Standard_B1s"
-  admin_username      = "azureuser"
-  network_interface_ids = [
-    azurerm_network_interface.vm_nic.id
-  ]
-
-  admin_ssh_key {
-    username   = "azureuser"
-    public_key = file(var.ssh_public_key_path)
-  }
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"
-  }
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "22_04-lts"
-    version   = "latest"
-  }
-
-  tags = var.tags
-}
-
 resource "azurerm_storage_account" "storage" {
   name                     = lower(replace("st${var.environment}${var.location}", "-", ""))
   resource_group_name      = azurerm_resource_group.rg.name
