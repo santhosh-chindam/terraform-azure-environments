@@ -25,48 +25,39 @@ on:
 
 jobs:
   terraform:
-    name: Deploy to ${{ matrix.env_name }}
+    name: Deploy to ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        env_name: [dev, test, production]
-
-    environment: ${{ matrix.env_name }}
+    environment: ${{ github.event.inputs.environment }}
 
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
 
     steps:
       - name: Checkout code
-        if: ${{ matrix.env_name == github.event.inputs.environment }}
         uses: actions/checkout@v3
 
       - name: Setup Terraform
-        if: ${{ matrix.env_name == github.event.inputs.environment }}
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.5
 
       - name: Terraform Init
-        if: ${{ matrix.env_name == github.event.inputs.environment }}
         run: terraform init
         working-directory: ./envs
 
       - name: Terraform Validate
-        if: ${{ matrix.env_name == github.event.inputs.environment }}
         run: terraform validate
         working-directory: ./envs
 
       - name: Terraform Plan
-        if: ${{ matrix.env_name == github.event.inputs.environment }}
-        run: terraform plan -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
+        run: terraform plan -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
 
       - name: Terraform Apply
-        if: ${{ github.ref == 'refs/heads/main' && matrix.env_name == github.event.inputs.environment }}
-        run: terraform apply -auto-approve -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve -input=false -var="environment=${{ github.event.inputs.environment }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
