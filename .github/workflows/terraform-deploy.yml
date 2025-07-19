@@ -32,11 +32,7 @@ jobs:
       matrix:
         env_name: [dev, test, production]
 
-    # Dynamically pick the environment based on matrix value
     environment: ${{ matrix.env_name }}
-
-    # Only run the job for the selected input environment
-    if: ${{ matrix.env_name == github.event.inputs.environment }}
 
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -45,27 +41,36 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
     steps:
+      - name: Skip unless environment matches input
+        if: ${{ matrix.env_name != github.event.inputs.environment }}
+        run: echo "Skipping: matrix env '${{ matrix.env_name }}' does not match selected environment '${{ github.event.inputs.environment }}'"
+        
       - name: Checkout code
+        if: ${{ matrix.env_name == github.event.inputs.environment }}
         uses: actions/checkout@v3
 
       - name: Setup Terraform
+        if: ${{ matrix.env_name == github.event.inputs.environment }}
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.7.5
 
       - name: Terraform Init
+        if: ${{ matrix.env_name == github.event.inputs.environment }}
         run: terraform init
         working-directory: ./envs
 
       - name: Terraform Validate
+        if: ${{ matrix.env_name == github.event.inputs.environment }}
         run: terraform validate
         working-directory: ./envs
 
       - name: Terraform Plan
+        if: ${{ matrix.env_name == github.event.inputs.environment }}
         run: terraform plan -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
+        if: ${{ github.ref == 'refs/heads/main' && matrix.env_name == github.event.inputs.environment }}
         run: terraform apply -auto-approve -input=false -var="environment=${{ matrix.env_name }}" -var="location=${{ github.event.inputs.region }}"
         working-directory: ./envs
